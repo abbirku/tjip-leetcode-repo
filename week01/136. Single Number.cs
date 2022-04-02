@@ -10,5 +10,14 @@ public int SingleNumber(int[] nums)
 			countManager[nums[i]]++;
 	}
 
-	return countManager.OrderBy(x => x.Value).FirstOrDefault().Key;
+	var minVal = 999999;
+	var res = 0;
+	for(int i=0;i<countManager.Count();i++){
+		if(minVal > countManager[i].value){
+			minVal = countManager[i].value;
+			res = countManager[i].Key;
+		}
+	}
+
+	return res;
 }
