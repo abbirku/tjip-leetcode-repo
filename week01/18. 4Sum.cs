@@ -1,110 +1,83 @@
 public class Solution {
-    public class ValInd
+    public int GetSequenceHashCode(IList<int> sequence)
+    {
+        int hash = 0;
+
+        foreach (int integer in sequence)
         {
-            public int Val { get; set; }
-            public int Ind { get; set; }
+            int x = integer;
+
+            x ^= x >> 17;
+            x *= 830770091;   // 0xed5ad4bb
+            x ^= x >> 11;
+            x *= -1404298415; // 0xac4c1b51
+            x ^= x >> 15;
+            x *= 830770091;   // 0x31848bab
+            x ^= x >> 14;
+
+            hash += x;
         }
 
-        public class CustomTypeComparer : IEqualityComparer<List<int>>
-        {
-            public bool Equals(List<int> x, List<int> y)
-            {
-                return x[0] == y[0] && x[1] == y[1] && x[2] == y[2] && x[3] == y[3];
-            }
+        return hash;
+    }
 
-            public int GetHashCode(List<int> obj)
-            {
-                return $"{obj[0]}{obj[1]}{obj[2]}{obj[3]}".GetHashCode();
-            }
-        }
+    public void TwoSum(int[] nums, int indexOfFour, int indexOfThree, int target, Dictionary<int, IList<int>> finalRes)
+    {
+        var keyValSet = new Dictionary<int, int>();
 
-        public List<int> Sort(List<int> list)
+        for (int i = 0; i < nums.Length; i++)
         {
-            int i, j, temp;
-            bool swapped;
-            for (i = 0; i < list.Count - 1; i++)
+            if (i != indexOfThree && i != indexOfFour)
             {
-                swapped = false;
-                for (j = 0; j < list.Count - i - 1; j++)
+                var y = target - nums[i];
+                if (keyValSet.ContainsKey(y))
                 {
-                    if (list[j] > list[j + 1])
-                    {
-                        temp = list[j];
-                        list[j] = list[j + 1];
-                        list[j + 1] = temp;
-                        swapped = true;
-                    }
+                    var list = new List<int> { nums[i], keyValSet[y], nums[indexOfThree], nums[indexOfFour] };
+
+                    var listHashCode = GetSequenceHashCode(list);
+                    if (!finalRes.ContainsKey(listHashCode))
+                        finalRes.Add(listHashCode, list);
+
+                    keyValSet.Remove(y);
                 }
-
-                if (swapped == false)
-                    break;
+                else if (!keyValSet.ContainsKey(nums[i]))
+                    keyValSet.Add(nums[i], nums[i]);
             }
-
-            return list;
         }
+    }
 
-        public void TwoSum(int[] nums, int indexOfThree, int indexOfFour, int target, HashSet<List<int>> hashSet)
+    public void ThreeSum(int[] nums, int indexOfFour, int target, Dictionary<int, IList<int>> finalRes)
+    {
+        var dictionary = new Dictionary<int, int>();
+
+        for (int i = indexOfFour + 1; i < nums.Length; i++)
         {
-            var dictionary = new Dictionary<int, ValInd>();
-
-            for (int i = 0; i < nums.Length; i++)
+            if (!dictionary.ContainsKey(nums[i]))
             {
-                if (i != indexOfThree && i != indexOfFour)
-                {
-                    var y = target - nums[i];
-                    if (dictionary.ContainsKey(y))
-                    {
-                        var list = new List<int> { nums[i], dictionary[y].Val, nums[indexOfThree], nums[indexOfFour] };
-                        list = Sort(list);
-
-                        if (!hashSet.Contains(list))
-                            hashSet.Add(list);
-
-                        dictionary.Remove(y);
-                    }
-                    else
-                    {
-                        if (!dictionary.ContainsKey(nums[i]))
-                            dictionary.Add(nums[i], new ValInd { Val = nums[i], Ind = i });
-                    }
-                }
+                dictionary.Add(nums[i], nums[i]);
+                TwoSum(nums, indexOfFour, i, target - nums[i], finalRes);
             }
         }
+    }
 
-        public void ThreeSum(int[] nums, int indexOfFour, int target, HashSet<List<int>> hashSet)
+    public IList<IList<int>> FourSum(int[] nums, int target)
+    {
+        if (nums == null || (nums != null && nums.Length < 4))
+            return new List<IList<int>>();
+
+        var finalRes = new Dictionary<int, IList<int>>();
+        var dictionary = new Dictionary<int, int>();
+
+        for (int i = 0; i < nums.Length; i++)
         {
-            var dictionary = new Dictionary<int, int>();
-
-            for (int i = indexOfFour + 1; i < nums.Length; i++)
+            if (!dictionary.ContainsKey(nums[i]))
             {
-                if (!dictionary.ContainsKey(nums[i]))
-                {
-                    dictionary.Add(nums[i], nums[i]);
-                    TwoSum(nums, i, indexOfFour, target - nums[i], hashSet);
-                }
+                dictionary.Add(nums[i], nums[i]);
+                ThreeSum(nums, i, target - nums[i], finalRes);
             }
         }
 
-        public IList<IList<int>> FourSum(int[] nums, int inputTarget)
-        {
-            var hashSet = new HashSet<List<int>>(new CustomTypeComparer());
-            var dictionary = new Dictionary<int, int>();
+        return finalRes.Select(x => x.Value).ToList();
 
-            if (nums == null || (nums != null && nums.Length < 4))
-                return new List<IList<int>>();
-
-            for (int i = 0; i < nums.Length; i++)
-            {
-                if (!dictionary.ContainsKey(nums[i]))
-                {
-                    dictionary.Add(nums[i], nums[i]);
-                    ThreeSum(nums, i, inputTarget - nums[i], hashSet);
-                }
-            }
-
-            return hashSet.Select(x =>
-            {
-                return (IList<int>)x;
-            }).ToList();
-        }
+    }
 }
