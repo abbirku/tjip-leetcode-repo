@@ -1,5 +1,3 @@
-// TC: O(N)
-// MC: O(N)
 public class TrieNode
 {
 	public bool IsWord;
@@ -85,6 +83,7 @@ public class Solution
 	public bool WordBreak(string s, IList<string> wordDict)
 	{
 		var dictionary = new Dictionary<string, bool>();
+
 		foreach (var word in wordDict)
 			Insert(word);
 

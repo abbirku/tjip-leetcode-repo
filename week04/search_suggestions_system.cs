@@ -1,4 +1,4 @@
-// TC: O(N)
+// TC: O(M*N) + O(X*N)
 // MC: O(N)
 public class TrieNode
 {
@@ -17,6 +17,7 @@ public class Solution
     public Solution()
         => root = new TrieNode();
 
+    //O(N)
     private void Insert(string productName)
     {
         var currentNode = root;
@@ -35,6 +36,7 @@ public class Solution
         currentNode.Data = productName;
     }
 
+    //O(N)
     private TrieNode Search(string word, bool isPrefixSearch = false)
     {
         var currentNode = root;
@@ -52,6 +54,7 @@ public class Solution
         return currentNode != null && (currentNode.IsWord || isPrefixSearch) ? currentNode : null;
     }
 
+    //O(N)
     private void GatherProducts(TrieNode node, List<string> suggestions)
     {
         if (node != null && node.IsWord)
@@ -66,21 +69,24 @@ public class Solution
         return;
     }
 
+    //Here, M = Number of products, N = Max length of a product among words and X = Length of searchWord
     public IList<IList<string>> SuggestedProducts(string[] products, string searchWord)
     {
         var prefix = string.Empty;
         var allSuggestions = new List<IList<string>>();
 
+        //O(M*N)
         foreach (var product in products)
             Insert(product);
 
+        //O(X*N)
         foreach (var ch in searchWord)
         {
             var suggestions = new List<string>();
             prefix += ch;
             
-            var node = Search(prefix, true);
-            GatherProducts(node, suggestions);
+            var node = Search(prefix, true); //O(N)
+            GatherProducts(node, suggestions); //O(N)
 
             allSuggestions.Add(suggestions.Take(3).ToList());
         }

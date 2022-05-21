@@ -1,5 +1,3 @@
-// TC: O(N)
-// MC: O(N)
 public class TrieNode
 {
     public TrieNode[] Nodes { get; set; }

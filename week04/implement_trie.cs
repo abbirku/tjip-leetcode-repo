@@ -1,6 +1,5 @@
 // TC: O(N)
 // MC: O(N)
-
 public class TrieNode
 {
 	public bool IsWord;
@@ -17,6 +16,7 @@ public class Trie
 	public Trie()
 		=> root = new TrieNode();
 
+	//O(N)
 	public void Insert(string word)
 	{
 		var currentNode = root;
@@ -34,6 +34,7 @@ public class Trie
 		currentNode.IsWord = true;
 	}
 
+	//O(N)
 	public bool Search(string word, bool isPrefixSearch = false)
 	{
 		var currentNode = root;
@@ -51,6 +52,7 @@ public class Trie
 		return currentNode != null && (currentNode.IsWord || isPrefixSearch);
 	}
 
+	//O(N)
 	public bool StartsWith(string prefix)
 		=> Search(prefix, true);
 }
