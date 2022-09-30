@@ -1,0 +1,9 @@
+Character is digit
+------------------
+Char.IsDigit(ch)
+
+Repeat string n times
+---------------------
+GeneratedStr = new StringBuilder(str.Length * n)
+                            .Insert(0, str, n)
+                            .ToString();
